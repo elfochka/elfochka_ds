@@ -7,9 +7,7 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 #COPY . .
-COPY clickomarket /app/
-COPY keys.py /app/
-COPY .flake8 /app/
+COPY . /app
 
 # Сначала запускаем файл, в котором будут записаны ключи в .env
 CMD ["/bin/bash", "-c", "python3 keys.py && sleep 1 && python clickomarket/manage.py runserver 0.0.0.0:8000"]
