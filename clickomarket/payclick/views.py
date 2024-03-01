@@ -101,7 +101,7 @@ class OrderDetailsView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(OrderDetailsView, self).get_context_data(**kwargs)
         context['STRIPE_PUBLIC_KEY'] = settings.STRIPE_PUBLIC_KEY
-
+        context['MEDIA_URL'] = settings.MEDIA_URL
         return context
 
 
