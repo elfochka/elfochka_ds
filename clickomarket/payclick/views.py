@@ -1,12 +1,15 @@
+import json
+
 import stripe
 from django.conf import settings
 from django.http import JsonResponse, HttpRequest
 from django.views import View
-from django.views.generic import DetailView, TemplateView, ListView
+from django.views.generic import DetailView, TemplateView, ListView, CreateView, DeleteView
 
-from .models import Item
+from .models import Item, Order
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.SetupIntent.create(usage="on_session")
 
 
 def get_full_domain(request: HttpRequest) -> str:
@@ -46,8 +49,6 @@ class CreateCheckoutSessionView(View):
         product_id = self.kwargs["pk"]
         item = Item.objects.get(id=product_id)
 
-        request.session['previous_page'] = request.build_absolute_uri()
-
         your_domain = get_full_domain(request)
 
         checkout_session = stripe.checkout.Session.create(
@@ -82,3 +83,64 @@ class SuccessView(TemplateView):
 
 class CancelView(TemplateView):
     template_name = "payclick/cancel.html"
+
+
+class OrderListView(ListView):
+    model = Order
+    template_name = 'payclick/order_list.html'
+    context_object_name = 'orders'
+
+
+class OrderDetailsView(DetailView):
+    queryset = (
+        Order.objects.prefetch_related('items')
+    )
+    template_name = 'payclick/order.html'
+    context_object_name = 'order'
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderDetailsView, self).get_context_data(**kwargs)
+        context["STRIPE_PUBLIC_KEY"] = settings.STRIPE_PUBLIC_KEY
+
+        return context
+
+
+class StripeIntentView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            req_json = json.loads(request.body)
+            customer = stripe.Customer.create(email=req_json['email'])
+            order = Order.objects.get(id=self.kwargs["pk"])
+            intent = stripe.PaymentIntent.create(
+                amount=order.total_amount(),
+                currency='usd',
+                customer=customer['id'],
+                metadata={
+                    "order_id": order.id
+                },
+            )
+            return JsonResponse({
+                'clientSecret': intent['client_secret']
+            })
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+
+class UpdateOrderPayment(View):
+    def post(self, request):
+        if request.method == "POST":
+            data = json.loads(request.body)
+            order_id = data.get('order_id')
+            stripe_payment_id = data.get('stripe_payment_id')
+
+            print(data)
+
+            try:
+                order = Order.objects.get(pk=order_id)
+                order.stripe_payment_id = stripe_payment_id
+                order.save()
+                return JsonResponse({"message": "Payment ID updated successfully."})
+            except Order.DoesNotExist:
+                return JsonResponse({"error": "Order not found."}, status=404)
+
+        return JsonResponse({"error": "Invalid request"}, status=400)

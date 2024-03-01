@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-
     .product-image {
         width: 500px;
         height: auto;
@@ -21,38 +20,42 @@
     <button type="button" id="checkout-button">Buy</button>
     </section>
     {% csrf_token %}
-    <script type="text/javascript">
 
-
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-        var stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
-        var checkoutButton = document.getElementById("checkout-button");
-        checkoutButton.addEventListener("click", function () {
-            fetch("{% url 'payclick:buy' item.id %}", {
-                method: "POST",
-                headers: {
-                    'X-CSRFToken': csrftoken
-                }
-            })
-                .then(function (response) {
-                    return response.json();
-                })
-                .then(function (session) {
-                    return stripe.redirectToCheckout({sessionId: session.id});
-                })
-                .then(function (result) {
-                    if (result.error) {
-                        alert(result.error.message);
-                    }
-                })
-                .catch(function (error) {
-                    console.error("Error:", error);
-                });
-        });
-
-
-    </script>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+
+
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    var stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
+    var checkoutButton = document.getElementById("checkout-button");
+    checkoutButton.addEventListener("click", function () {
+        fetch("{% url 'payclick:buy' item.id %}", {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (session) {
+                return stripe.redirectToCheckout({sessionId: session.id});
+            })
+            .then(function (result) {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            })
+            .catch(function (error) {
+                console.error("Error:", error);
+            });
+    });
+
+
+</script>
 {% endblock %}

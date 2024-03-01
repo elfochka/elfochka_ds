@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Список заказов - ClickoMarket{% endblock %}
+
+{% block extra_css %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        color: #333;
+        font-weight: bold;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    td {
+        text-align: center;
+    }
+
+    .empty {
+        text-align: center;
+        font-style: italic;
+        color: #777;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const rows = document.querySelectorAll('tr[data-href]');
+        rows.forEach(row => {
+            row.addEventListener('click', () => {
+                window.location.href = row.getAttribute('data-href');
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<h2>Список заказов</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Номер заказа</th>
+        <th>Дата создания</th>
+        <th>Общая сумма</th>
+        <th>Статус оплаты</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for order in orders %}
+    <tr data-href="{% url 'payclick:order' order.pk %}">
+        <td>{{ order.pk }}</td>
+        <td>{{ order.created_at }}</td>
+        <td>${{ order.get_display_total_amount }}</td>
+        <td>{% if order.get_stripe_payment_status %}{{ order.get_stripe_payment_status }}{% else %} Не оплачен {% endif
+            %}
+        </td>
+
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3" class="empty">Нет заказов</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
