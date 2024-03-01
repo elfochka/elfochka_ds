@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('payclick', '0006_item_currency_order_discount_tax'),
     ]
@@ -22,11 +21,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='order',
             name='discount',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='payclick.discount'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                    to='payclick.discount'),
         ),
         migrations.AddField(
             model_name='order',
             name='tax',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='payclick.tax'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL,
+                                    to='payclick.tax'),
         ),
     ]

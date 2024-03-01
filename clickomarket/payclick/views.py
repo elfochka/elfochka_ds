@@ -2,21 +2,21 @@ import json
 
 import stripe
 from django.conf import settings
-from django.http import JsonResponse, HttpRequest
+from django.http import HttpRequest, JsonResponse
 from django.views import View
-from django.views.generic import DetailView, TemplateView, ListView, CreateView, DeleteView
+from django.views.generic import (DetailView, ListView,
+                                  TemplateView)
 
 from .models import Item, Order
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
-stripe.SetupIntent.create(usage="on_session")
+stripe.SetupIntent.create(usage='on_session')
 
 
 def get_full_domain(request: HttpRequest) -> str:
-    """Возвращает полный домен, включая схему (http/https)."""
     scheme = request.scheme
     host = request.get_host()
-    return f"{scheme}://{host}"
+    return f'{scheme}://{host}'
 
 
 class ItemListView(ListView):
@@ -34,11 +34,11 @@ class ItemListView(ListView):
 class ItemDetailsView(DetailView):
     model = Item
     template_name = 'payclick/item.html'
-    context_object_name = "item"
+    context_object_name = 'item'
 
     def get_context_data(self, **kwargs):
         context = super(ItemDetailsView, self).get_context_data(**kwargs)
-        context["STRIPE_PUBLIC_KEY"] = settings.STRIPE_PUBLIC_KEY
+        context['STRIPE_PUBLIC_KEY'] = settings.STRIPE_PUBLIC_KEY
         context['MEDIA_URL'] = settings.MEDIA_URL
 
         return context
@@ -46,7 +46,7 @@ class ItemDetailsView(DetailView):
 
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
-        product_id = self.kwargs["pk"]
+        product_id = self.kwargs['pk']
         item = Item.objects.get(id=product_id)
 
         your_domain = get_full_domain(request)
@@ -66,7 +66,7 @@ class CreateCheckoutSessionView(View):
                 },
             ],
             metadata={
-                "product_id": item.id
+                'product_id': item.id
             },
             mode='payment',
             success_url=your_domain + '/success/',
@@ -78,11 +78,11 @@ class CreateCheckoutSessionView(View):
 
 
 class SuccessView(TemplateView):
-    template_name = "payclick/success.html"
+    template_name = 'payclick/success.html'
 
 
 class CancelView(TemplateView):
-    template_name = "payclick/cancel.html"
+    template_name = 'payclick/cancel.html'
 
 
 class OrderListView(ListView):
@@ -100,7 +100,7 @@ class OrderDetailsView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OrderDetailsView, self).get_context_data(**kwargs)
-        context["STRIPE_PUBLIC_KEY"] = settings.STRIPE_PUBLIC_KEY
+        context['STRIPE_PUBLIC_KEY'] = settings.STRIPE_PUBLIC_KEY
 
         return context
 
@@ -110,13 +110,13 @@ class StripeIntentView(View):
         try:
             req_json = json.loads(request.body)
             customer = stripe.Customer.create(email=req_json['email'])
-            order = Order.objects.get(id=self.kwargs["pk"])
+            order = Order.objects.get(id=self.kwargs['pk'])
             intent = stripe.PaymentIntent.create(
                 amount=order.total_amount(),
                 currency='usd',
                 customer=customer['id'],
                 metadata={
-                    "order_id": order.id
+                    'order_id': order.id
                 },
             )
             return JsonResponse({
@@ -128,7 +128,7 @@ class StripeIntentView(View):
 
 class UpdateOrderPayment(View):
     def post(self, request):
-        if request.method == "POST":
+        if request.method == 'POST':
             data = json.loads(request.body)
             order_id = data.get('order_id')
             stripe_payment_id = data.get('stripe_payment_id')
@@ -139,8 +139,8 @@ class UpdateOrderPayment(View):
                 order = Order.objects.get(pk=order_id)
                 order.stripe_payment_id = stripe_payment_id
                 order.save()
-                return JsonResponse({"message": "Payment ID updated successfully."})
+                return JsonResponse({'message': 'Payment ID updated successfully.'})
             except Order.DoesNotExist:
-                return JsonResponse({"error": "Order not found."}, status=404)
+                return JsonResponse({'error': 'Order not found.'}, status=404)
 
-        return JsonResponse({"error": "Invalid request"}, status=400)
+        return JsonResponse({'error': 'Invalid request'}, status=400)

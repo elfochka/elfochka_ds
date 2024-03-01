@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('payclick', '0003_remove_item_price_id'),
     ]
@@ -17,7 +16,8 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=512, verbose_name='название изображения')),
                 ('image', models.ImageField(upload_to='images/products/', verbose_name='изображение')),
-                ('item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='payclick.item', verbose_name='товар')),
+                ('item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images',
+                                           to='payclick.item', verbose_name='товар')),
             ],
         ),
     ]

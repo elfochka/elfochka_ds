@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Item, Order, Discount, Tax
+
+from .models import Discount, Item, Order, Tax
 
 
 @admin.register(Item)
@@ -14,7 +15,7 @@ class ItemAdmin(admin.ModelAdmin):
         ('Дополнительно', {
             'fields': ('image',)
         }),
-        ('Цена', {
+        ('Цена в !центах!', {
             'fields': ('price',)
         }),
 

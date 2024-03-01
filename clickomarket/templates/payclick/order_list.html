@@ -67,8 +67,10 @@
         <td>{{ order.pk }}</td>
         <td>{{ order.created_at }}</td>
         <td>${{ order.get_display_total_amount }}</td>
-        <td>{% if order.get_stripe_payment_status %}{{ order.get_stripe_payment_status }}{% else %} Не оплачен {% endif
-            %}
+        <td>
+            {% if order.get_stripe_payment_status %}
+            {{ order.get_stripe_payment_status }}
+            {% else %} Не оплачен {% endif %}
         </td>
 
     </tr>

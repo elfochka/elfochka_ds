@@ -15,20 +15,27 @@ class Item(models.Model):
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='USD')
 
     def __str__(self):
-        return f"{self.name} id: {self.pk}"
+        normal_price = '{0:.2f}'.format(self.price / 100)
+        return f'{self.name} id: {self.pk} за {normal_price} '
 
     def get_display_price(self):
-        return "{0:.2f}".format(self.price / 100)
+        return '{0:.2f}'.format(self.price / 100)
 
 
 class Discount(models.Model):
     amount = models.IntegerField()
     description = models.TextField()
 
+    def __str__(self):
+        return '{0:.2f}'.format(self.amount / 100)
+
 
 class Tax(models.Model):
     amount = models.IntegerField()
     description = models.TextField()
+
+    def __str__(self):
+        return '{0:.2f}'.format(self.amount / 100)
 
 
 class Order(models.Model):
@@ -39,7 +46,7 @@ class Order(models.Model):
     stripe_payment_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='ID платежа в Stripe')
 
     def __str__(self):
-        return f"Заказ № {self.pk} от {self.created_at}"
+        return f'Заказ № {self.pk} от {self.created_at}'
 
     def total_amount(self):
         total_amount = sum(item.price for item in self.items.all())
@@ -51,7 +58,7 @@ class Order(models.Model):
         return total_amount
 
     def get_display_total_amount(self):
-        return "{0:.2f}".format(self.total_amount() / 100)
+        return '{0:.2f}'.format(self.total_amount() / 100)
 
     def get_stripe_payment_status(self):
         if self.stripe_payment_id:
