@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<style>
+.catalog-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.product-detail {
+    flex: 1 1 calc(20% - 20px); /* Уменьшаем базовую ширину, чтобы учесть отступы */
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
+    margin: 10px; /* Если нужен внешний отступ между элементами */
+}
+.product-detail:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.product-image {
+    width: 350px;
+    max-width: 100%;
+    height: auto;
+}
+</style>
+
+<div class="catalog-container">
+    {% for item in items %}
+    <a href="{% url 'payclick:item' item.id %}" class="product-detail">
+        <h2>{{ item.name }}</h2>
+        <img src="{% if item.image %}{{ item.image.url }}{% else %}{{ MEDIA_URL }}products/pusto.jpg{% endif %}" alt="{{ item.name }}" class="product-image">
+        <p><strong>Цена:</strong> {{ item.get_display_price }} $</p>
+    </a>
+    {% empty %}
+    <p>Товары не найдены.</p>
+    {% endfor %}
+</div>
+{% endblock %}

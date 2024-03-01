@@ -1,6 +1,40 @@
 # ClickerMarket
+
 ### Приложение для создания платежных форм для товаров в системе Stripe
 
+### Что бы установить на свой сервер:
+
+- Скачайте файлы из репозитария.
 - Для создания образа запустить команду: `docker build -t clickomarket .`
 - Далее вытянуть образ: docker pull `название_вашей_директории/clickomarket:clickomarket`
-- И запустить контейнер с необходимыми ключами: `docker run -d -p 80:8000 --name clickomarket -e SECRET_KEY=ваш_секретный_код -e DEBUG=True/False STRIPE_PUBLIC_KEY=pk_test STRIPE_SECRET_KEY=sk_test название_вашей_директории/clickomarket:clickomarket`
+- И запустить контейнер с необходимыми
+  ключами: `docker run -d -p 80:8000 --name clickomarket -e SECRET_KEY=ваш_секретный_код -e DEBUG=True/False STRIPE_PUBLIC_KEY=pk_test STRIPE_SECRET_KEY=sk_test название_вашей_директории/clickomarket:clickomarket`
+
+### Демонстрация работы приложения: [http://kto-tut.ru/](http://kto-tut.ru/)
+
+###### Автоматизировано создание новых образов в Docker: каждый раз при заливке новой версии в Git строится новый образ. А так же для обеспечения безопасности и предотвращения перегрузки БД лишней информацией, приложение обновляется каждый день (пересобирается новый контейнер). Если приложение недоступно, попробуйте повторить через 5 минут.
+
+### Для проверки оплаты можно использовать тестовые карты:
+
+#### Успешная оплата:
+
+- Visa    `4242424242424242`
+- Visa (debit)    `4000056655665556`
+- Mastercard    `5555555555554444`
+- UnionPay    `6200000000000005`
+- Argentina (AR)    `4000000320000021`
+
+#### Неуспешная оплата:
+
+- Generic decline    `4000000000000002`
+- Insufficient funds decline    `4000000000009995`
+- Lost card decline    `4000000000009987`
+- Expired card decline    `4000000000000069`
+
+### Админ-панель:
+
+Админка доступна по адресу: [http://kto-tut.ru/admin](http://kto-tut.ru/admin)
+логин: `test`
+пароль: `cvFg8dH3#JLmiXd`
+
+Цена товара в админке в центах.

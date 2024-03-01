@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Магазин ClickoMarket{% endblock %}</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
         .header, .footer { background-color: #f3f3f3; text-align: center; padding: 10px 0; }
@@ -14,6 +16,7 @@
         .product { margin: 20px 0; }
         .product-title { font-size: 20px; color: #333; }
         .product-price { font-size: 16px; color: #888; }
+
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -27,8 +30,7 @@
 
 <div class="nav">
     {% block nav %}
-    <a href="#">Главная</a>
-    <a href="#">Товары</a>
+    <a href="{% url 'payclick:catalog' %}">Товары</a>
     <a href="#">О нас</a>
     <a href="#">Контакты</a>
     {% endblock %}
@@ -36,7 +38,6 @@
 
 <div class="content">
     {% block content %}
-    <!-- Содержимое страницы; переопределяется в дочерних шаблонах -->
     {% endblock %}
 </div>
 

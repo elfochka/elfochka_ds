@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Покупка успешно совершена!</h4>
+        <p>Спасибо за вашу покупку. Детали заказа отправлены на вашу электронную почту.</p>
+        <hr>
+        <p class="mb-0">Вернуться на <a href="{% url 'payclick:catalog' %}">главную страницу</a>.</p>
+    </div>
+</div>
+{% endblock %}
