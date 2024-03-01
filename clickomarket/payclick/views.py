@@ -48,14 +48,14 @@ class CreateCheckoutSessionView(View):
 
         request.session['previous_page'] = request.build_absolute_uri()
 
-        YOUR_DOMAIN = get_full_domain(request)
+        your_domain = get_full_domain(request)
 
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
                 {
                     'price_data': {
-                        'currency': 'usd',
+                        'currency': item.currency,
                         'unit_amount': item.price,
                         'product_data': {
                             'name': item.name
@@ -68,8 +68,8 @@ class CreateCheckoutSessionView(View):
                 "product_id": item.id
             },
             mode='payment',
-            success_url=YOUR_DOMAIN + '/success/',
-            cancel_url=YOUR_DOMAIN + '/cancel/',
+            success_url=your_domain + '/success/',
+            cancel_url=your_domain + '/cancel/',
         )
         return JsonResponse({
             'id': checkout_session.id

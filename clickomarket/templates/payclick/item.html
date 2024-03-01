@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-{% load static %}
 <style>
 
     .product-image {
@@ -16,7 +15,7 @@
          alt="{{ item.name }}" class="product-image">
 
     <p>{{ item.description }}</p>
-    <p><strong>Цена:</strong> {{ item.get_display_price }} $</p>
+    <p><strong>Цена:</strong> {{ item.get_display_price }} {{ item.currency }}</p>
 
 
     <button type="button" id="checkout-button">Buy</button>
